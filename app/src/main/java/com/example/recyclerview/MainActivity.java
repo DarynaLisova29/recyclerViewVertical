@@ -8,12 +8,16 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     List<Item> itemList = new ArrayList<>();
+    Button rightBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,8 +25,20 @@ public class MainActivity extends AppCompatActivity {
         init();
         addScrollListener();
         post();
+        setClickButton();
 
     }
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.rightBtn) {
+            int position=searchIsSelected();
+            Log.d("Position", "onClick: "+position);
+            if(position>-1){
+                scrollToSpecificItem(position);
+            }
+        }
+    }
+
 
     public void createList(List<Item>list){
         for (int i = 1; i < 51; i++) {
@@ -32,10 +48,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
         createList(itemList);
+
         setContentView(R.layout.activity_main);
+
+        rightBtn = findViewById(R.id.rightBtn);
         App.recyclerView = findViewById(R.id.recycler);
         App.recyclerView.setLayoutManager(App.layoutManager);
         App.recyclerView.setAdapter(new MyAdapter(itemList));
+    }
+
+    private void setClickButton() {
+        rightBtn.setOnClickListener(this);
     }
 
     private void centerItemsWithTrueValue(LinearLayoutManager layoutManager) {
@@ -70,5 +93,35 @@ public class MainActivity extends AppCompatActivity {
                 centerItemsWithTrueValue(App.layoutManager);
             }
         });
+    }private int searchIsSelected(){
+        int firstVisibleItemPosition = App.layoutManager.findFirstVisibleItemPosition();
+        int lastVisibleItemPosition = App.layoutManager.findLastVisibleItemPosition();
+        for(int i=firstVisibleItemPosition;i<lastVisibleItemPosition;i++){
+            if(itemList.get(i).isSelected()){
+                firstVisibleItemPosition=i+1;
+            }
+        }
+        for(int i=firstVisibleItemPosition;i<itemList.size();i++){
+            if(itemList.get(i).isSelected()){
+                return i;
+            }
+        }
+        return -1;
     }
-}
+
+    private void scrollToSpecificItem(int targetPosition) {
+        App.recyclerView.scrollToPosition(targetPosition);
+        App.recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                View view = App.layoutManager.findViewByPosition(targetPosition);
+                if (view != null) {
+                    App.layoutManager.scrollToPositionWithOffset(targetPosition, (App.recyclerView.getWidth() - view.getWidth()) / 2);
+                } else {
+                    App.recyclerView.post(this);
+                }
+            }
+        });
+    }
+
+    }
