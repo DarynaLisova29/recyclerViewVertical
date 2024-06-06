@@ -12,6 +12,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         layoutManager = new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false);
+                LinearLayoutManager.VERTICAL, false);
     }
 }

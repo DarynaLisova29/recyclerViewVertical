@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; i++) {
             Item item = itemList.get(i);
             if (item.isSelected()) {
-                layoutManager.scrollToPositionWithOffset(i, (App.recyclerView.getWidth() - layoutManager.findViewByPosition(i).getWidth()) / 2);
+                layoutManager.scrollToPositionWithOffset(i, (App.recyclerView.getHeight() - layoutManager.findViewByPosition(i).getHeight()) / 2);
                 break;
             }
         }
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 View view = App.layoutManager.findViewByPosition(targetPosition);
                 if (view != null) {
-                    App.layoutManager.scrollToPositionWithOffset(targetPosition, (App.recyclerView.getWidth() - view.getWidth()) / 2);
+                    App.layoutManager.scrollToPositionWithOffset(targetPosition, (App.recyclerView.getHeight() - view.getHeight()) / 2);
                 } else {
                     App.recyclerView.post(this);
                 }
